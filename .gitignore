@@ -1,0 +1,6 @@
+*/__history/
+*/__history/*.pas.~*~
+Source/ComInterfaces/Main/__history/
+Source/ComInterfaces/__history/
+Units/
+__history/
