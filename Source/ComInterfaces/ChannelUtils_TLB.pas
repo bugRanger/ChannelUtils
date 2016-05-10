@@ -12,10 +12,10 @@ unit ChannelUtils_TLB;
 // ************************************************************************ //
 
 // $Rev: 52393 $
-// File generated on 05.05.2016 15:08:13 from Type Library described below.
+// File generated on 10.05.2016 16:00:49 from Type Library described below.
 
 // ************************************************************************  //
-// Type Lib: D:\Projects\InDeveloping\PortUtils\Source\ComInterfaces\ChannelUtils (1)
+// Type Lib: D:\Projects\InDeveloping\ChannelUtils\Source\ComInterfaces\ChannelUtils (1)
 // LIBID: {7992BFC5-ABE3-4242-816B-DA90AE41D75D}
 // LCID: 0
 // Helpfile:
