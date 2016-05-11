@@ -272,7 +272,7 @@ procedure TIComPort.Open;
 begin
   try
     FComPort.Open( 0, True );
-  except
+  except//???:EDIT.
     on E:Exception do
       Self.Warder.CrtError(E.Message);
   end;
@@ -281,7 +281,7 @@ procedure TIComPort.Close;
 begin
   try
     FComPort.Close();
-  except
+  except//???:EDIT.
     on E:Exception do
       Self.Warder.CrtError(E.Message);
   end;
