@@ -86,7 +86,7 @@ interface
         procedure Open; safecall;
         procedure Close; safecall;
       public
-        constructor Create(AEvents: ICoChannelUtilsEvents); overload;
+        constructor Create(AEvents: ICoChannelUtilsEvents = nil); overload;
         destructor Destroy; override;
     end;
     TIComPortWarder = class( TWarderClass<TIComPort> );

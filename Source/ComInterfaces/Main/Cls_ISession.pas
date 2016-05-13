@@ -45,7 +45,7 @@ interface
         procedure Timers(const ATpTimer: array of TTypeTimer; const ATpExec: TTypeTimerExec = tteClear; const AConst: TTimer = 0);
       public
         constructor Create(ASession : TSession = nil); overload;
-        destructor Destroy; overload;
+        destructor Destroy; override;
     end;
     {$ENDREGION}
 
