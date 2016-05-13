@@ -15,7 +15,9 @@ uses
   Tmp_Result in '..\_source\Exchange\Tmp_Result.pas',
   Cls_IComPort in 'Source\ComInterfaces\Main\Cls_IComPort.pas',
   Cls_SocketCtrl in '..\_source\Exchange\Cls_SocketCtrl.pas',
-  Cls_ISocket in 'Source\ComInterfaces\Main\Cls_ISocket.pas';
+  Fnc_ConvVariant in '..\_source\Others\Fnc_ConvVariant.pas',
+  Cls_ISocket in 'Source\ComInterfaces\Main\Cls_ISocket.pas',
+  Cls_ISession in 'Source\ComInterfaces\Main\Cls_ISession.pas';
 
 exports
   DllGetClassObject,
@@ -24,10 +26,7 @@ exports
   DllUnregisterServer,
   DllInstall;
 
-
-
 {$R *.TLB}
-
 {$R *.RES}
 
 begin

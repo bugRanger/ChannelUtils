@@ -3,13 +3,15 @@ unit Cls_IComPort;
 interface
   uses
     System.Win.ObjComAuto, //TObjectDispatch.
-    System.Classes,
-
+    System.SysUtils,
     Winapi.ActiveX,
 
     ChannelUtils_TLB,
 
+    Cls_ISession,
+
     Cls_TComPort,
+
     Cls_Buffer,
     Cls_Warder,
 
@@ -21,6 +23,7 @@ interface
       private
         FComPort  : TComPort;
         FEvents   : ICoChannelUtilsEvents;
+        FSession  : TISession;
       private
         //Класс надзиратель.
         FWarder   : IWarderClass<TIComPort>;
@@ -36,6 +39,7 @@ interface
         function Get_ReadTotalTimeoutMultiplier: Word; safecall;
         function Get_WriteTotalTimeoutConstant: Word; safecall;
         function Get_WriteTotalTimeoutMultiplier: Word; safecall;
+        function Get_Session: ISession; safecall;
         procedure Set_Number(AValue: Word); safecall;
         procedure Set_BaudRate(AValue: Word); safecall;
         procedure Set_ByteSize(AValue: ChannelUtils_TLB.TByteSize); safecall;
@@ -56,6 +60,7 @@ interface
         property Parity: ChannelUtils_TLB.TParity read Get_Parity write Set_Parity;
         property StopBits: ChannelUtils_TLB.TStopBits read Get_StopBits write Set_StopBits;
         property BufSize: Word read Get_BufSize write Set_BufSize;
+        property Session: ChannelUtils_TLB.ISession read Get_Session;
       public
         property ReadIntervalTimeout: Word read Get_ReadIntervalTimeout write Set_ReadIntervalTimeout;
         property ReadTotalTimeoutConstant: Word read Get_ReadTotalTimeoutConstant write Set_ReadTotalTimeoutConstant;
@@ -68,6 +73,9 @@ interface
         procedure OnExchange(const ASendBuf, ARecvBuf: TBuffer; const AErrCode: Cardinal; const AResult: TExecuteResult);
         procedure OnWrite(const ABuffer: TBuffer; const ABytesTrans, AErrCode: Cardinal; const AResult: TExecuteResult);
         procedure OnRead(const ABuffer: TBuffer; const ABytesTrans, AErrCode: Cardinal; const AResult: TExecuteResult);
+      private
+        procedure OnInfo(const AGUID: TGUID; const AText: string; const AType: TWarderMessage);
+        procedure OnError(const AGUID: TGUID; const AText: string; const AType: TWarderMessage; const AError: Exception);
       public
         function Exchange(AQuery: PSafeArray; out AReturn: PSafeArray): TResultExec; safecall;
         function Write(AQuery: PSafeArray; var ABytesTrans: Word; var AErrorCode: Word): TResultExec; safecall;
@@ -86,26 +94,33 @@ interface
 
 implementation
   uses
-    System.Variants,
-    System.SysUtils,
-    Cls_Others;
+    Fnc_ConvVariant;
 
 {$REGION ' TIComPort '}
 constructor TIComPort.Create(AEvents: ICoChannelUtilsEvents);
 begin
   inherited Create( nil );
-  FWarder   := TIComPortWarder.Create( Self, nil );
+  //Надзиратель.
+  FWarder := TIComPortWarder.Create( Self, nil );
+    FWarder.OnInfo  := Self.OnInfo;
+    FWarder.OnError := Self.OnError;
+  //Присвоение.
   FEvents   := AEvents;
-  FComPort  := TComPort.Create();
+  //Создание.
+  FComPort  := TComPort.Create( FWarder );
     FComPort.OnExchangeByte := Self.OnExchange;
     FComPort.OnWriteByte := Self.OnWrite;
     FComPort.OnReadByte := Self.OnRead;
+  //Сессия канала.
+  FSession := TISession.Create( FComPort.Session );
 end;
 destructor TIComPort.Destroy;
-begin
+begin//Освобождение.
   FComPort.Free;
-  FEvents := nil;
-  FWarder := nil;
+  //Обнуление.
+  FSession  := nil;
+  FEvents   := nil;
+  FWarder   := nil;
   inherited;
 end;
 
@@ -123,10 +138,6 @@ function TIComPort.Get_BaudRate: Word;
 begin
   Result := FComPort.BaudRate;
 end;
-function TIComPort.Get_BufSize: Word;
-begin
-  Result := FComPort.BufSize;
-end;
 function TIComPort.Get_ByteSize: ChannelUtils_TLB.TByteSize;
 begin
   Result := ChannelUtils_TLB.TByteSize( FComPort.ByteSize );
@@ -138,6 +149,14 @@ end;
 function TIComPort.Get_StopBits: ChannelUtils_TLB.TStopBits;
 begin
   Result := ChannelUtils_TLB.TStopBits( FComPort.StopBits );
+end;
+function TIComPort.Get_BufSize: Word;
+begin
+  Result := FComPort.BufSize;
+end;
+function TIComPort.Get_Session: ISession;
+begin
+  Result := FSession;
 end;
 function TIComPort.Get_ReadIntervalTimeout: Word;
 begin
@@ -222,6 +241,23 @@ begin
   if Assigned( Self.FEvents ) then
     Self.FEvents.OnRead( ABuffer.ToVariant(), ABytesTrans, AErrCode, TResultExec( AResult ));
 end;
+
+procedure TIComPort.OnInfo(const AGUID: TGUID; const AText: string; const AType: TWarderMessage);
+begin
+  if AType in [ tmSelf, tmComPort ] then
+    Self.FEvents.OnInfo( TConvVariant.FromRecord<TGUID>( AGUID ), AText );
+end;
+procedure TIComPort.OnError(const AGUID: TGUID; const AText: string; const AType: TWarderMessage; const AError: Exception);
+begin
+  if Assigned( Self.FEvents ) then
+    if AType in [ tmSelf, tmComPort ] then
+    case Assigned( AError ) of
+      True:
+        Self.FEvents.OnError( TConvVariant.FromRecord<TGUID>( AGUID ), AText, AError.Message );
+      False:
+        Self.FEvents.OnError( TConvVariant.FromRecord<TGUID>( AGUID ), AText, string.Empty );
+    end;
+end;
 {$ENDREGION}
 
 //Проверка состояния.
@@ -269,21 +305,27 @@ end;
 
 //Открываем/Закрываем порт (Без потока работы).
 procedure TIComPort.Open;
+  const
+    cMethodName = 'Open';
+    cLUID : TGUID = '{81856462-820A-4347-BEA6-0858F8B8E9B1}';
 begin
   try
     FComPort.Open( 0, True );
-  except//???:EDIT.
+  except
     on E:Exception do
-      Self.Warder.CrtError(E.Message);
+      Self.Warder.CallError( cLUID, cMethodName, tmComPort, E );
   end;
 end;
 procedure TIComPort.Close;
+  const
+    cMethodName = 'Close';
+    cLUID : TGUID = '{57825B93-6221-48AD-959E-6902F88F4F4C}';
 begin
   try
     FComPort.Close();
-  except//???:EDIT.
+  except
     on E:Exception do
-      Self.Warder.CrtError(E.Message);
+      Self.Warder.CallError( cLUID, cMethodName, tmComPort, E );
   end;
 end;
 {$ENDREGION}

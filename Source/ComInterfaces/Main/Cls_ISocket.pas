@@ -3,9 +3,12 @@ unit Cls_ISocket;
 interface
   uses
     System.Win.ObjComAuto, //TObjectDispatch.
+    System.SysUtils,
     Winapi.ActiveX,
 
     ChannelUtils_TLB,
+
+    Cls_ISession,
 
     Cls_SocketCtrl,
 
@@ -23,6 +26,7 @@ interface
       private
         FSocket   : TSocketCtrl<IUnknown>;
         FEvents   : ICoChannelUtilsEvents;
+        FSession  : TISession;
       private
         //Класс надзиратель.
         FWarder   : IWarderClass<TISocket>;
@@ -31,6 +35,7 @@ interface
         function Get_Port: Integer; safecall;
         function Get_TotalTime: Word; safecall;
         function Get_Reconnect: Int64; safecall;
+        function Get_Session: ISession; safecall;
         procedure Set_Host(const AValue: WideString); safecall;
         procedure Set_Port(AValue: Integer); safecall;
         procedure Set_TotalTime(AValue: Word); safecall;
@@ -42,12 +47,16 @@ interface
         property Port: Integer read Get_Port write Set_Port;
         property TotalTime: Word read Get_TotalTime write Set_TotalTime;
         property Reconnect: Int64 read Get_Reconnect write Set_Reconnect;
+        property Session: ChannelUtils_TLB.ISession read Get_Session;
       public
         property Warder: IWarderClass<TISocket> read GetWarder implements IWarderClass<TISocket>;
       private
         procedure OnExchange(const ASendBuf, ARecvBuf: TBuffer; const AErrCode: Cardinal; const AResult: TExecuteResult);
         procedure OnWrite(const ABuffer: TBuffer; const ABytesTrans, AErrCode: Cardinal; const AResult: TExecuteResult);
         procedure OnRead(const ABuffer: TBuffer; const ABytesTrans, AErrCode: Cardinal; const AResult: TExecuteResult);
+      private
+        procedure OnInfo(const AGUID: TGUID; const AText: string; const AType: TWarderMessage);
+        procedure OnError(const AGUID: TGUID; const AText: string; const AType: TWarderMessage; const AError: Exception);
       public
         function Exchange(AQuery: PSafeArray; out AReturn: PSafeArray): TResultExec; safecall;
         function Write(AQuery: PSafeArray; var ABytesTrans: Word; var AErrorCode: Word): TResultExec; safecall;
@@ -62,29 +71,41 @@ interface
         destructor Destroy; override;
     end;
     TISocketWarder = class( TWarderClass<TISocket> );
+    {$ENDREGION}
 
 implementation
   uses
     System.Variants,
-    System.SysUtils;
+    Winapi.Windows,
+
+    Fnc_ConvVariant;
 
 {$REGION ' TISocket '}
 //Создание/Разрушение класса.
 constructor TISocket.Create(AEvents: ICoChannelUtilsEvents);
 begin
   inherited Create( nil );
+  //Надзиратель.
   FWarder := TISocketWarder.Create( Self, nil );
+    FWarder.OnInfo  := Self.OnInfo;
+    FWarder.OnError := Self.OnError;
+  //Присвоение.
   FEvents := AEvents;
+  //Создание.
   FSocket := TSocketCtrl<IUnknown>.Create( cTagHost, cTagPort, FWarder );
     FSocket.OnExchange  := Self.OnExchange;
     FSocket.OnWrite     := Self.OnWrite;
     FSocket.OnRead      := Self.OnRead;
+  //Сессия канала.
+  FSession := TISession.Create( FSocket.Session );
 end;
 destructor TISocket.Destroy;
-begin
+begin//Освобождение.
   FSocket.Free;
-  FEvents := nil;
-  FWarder := nil;
+  //Обнуление.
+  FSession  := nil;
+  FEvents   := nil;
+  FWarder   := nil;
   inherited;
 end;
 
@@ -96,7 +117,7 @@ begin
 end;
 function TISocket.Get_Host: WideString;
 begin
-  Result := FSocket.ClientSocket.Custom.Address;
+  Result := FSocket.ClientSocket.Custom.Host;
 end;
 function TISocket.Get_Port: Integer;
 begin
@@ -110,9 +131,14 @@ function TISocket.Get_Reconnect: Int64;
 begin
   Result := FSocket.ClientSocket.Reconnect.Interval;
 end;
+function TISocket.Get_Session: ISession;
+begin
+  Result := FSession;
+end;
+
 procedure TISocket.Set_Host(const AValue: WideString);
 begin
-  FSocket.ClientSocket.Custom.Address := AValue;
+  FSocket.ClientSocket.Custom.Host := AValue;
 end;
 procedure TISocket.Set_Port(AValue: Integer);
 begin
@@ -123,12 +149,11 @@ begin
   FSocket.ExchangeTM := AValue;
 end;
 procedure TISocket.Set_Reconnect(AValue: Int64);
-begin
+begin//Сначало указываем что будет запуск, потом значение.
+  //Иначе таймер сразу пойдет на выполнение, что приведет к двойному открытию.
   FSocket.ClientSocket.Reconnect.Interval := AValue;
-  FSocket.ClientSocket.Reconnect.Enabled  := ( AValue > 0 );
 end;
 {$ENDREGION}
-
 {$REGION ' События. '}
 procedure TISocket.OnExchange(const ASendBuf, ARecvBuf: TBuffer; const AErrCode: Cardinal; const AResult: TExecuteResult);
 begin
@@ -144,6 +169,23 @@ procedure TISocket.OnRead(const ABuffer: TBuffer; const ABytesTrans, AErrCode: C
 begin
   if Assigned( Self.FEvents ) then
     Self.FEvents.OnRead( ABuffer.ToVariant(), ABytesTrans, AErrCode, TResultExec( AResult ));
+end;
+
+procedure TISocket.OnInfo(const AGUID: TGUID; const AText: string; const AType: TWarderMessage);
+begin
+  if AType in [ tmSelf, tmSocket ] then
+    Self.FEvents.OnInfo( TConvVariant.FromRecord<TGUID>( AGUID ), AText );
+end;
+procedure TISocket.OnError(const AGUID: TGUID; const AText: string; const AType: TWarderMessage; const AError: Exception);
+begin
+  if Assigned( Self.FEvents ) then
+    if AType in [ tmSelf, tmSocket ] then
+  case Assigned( AError ) of
+    True:
+      Self.FEvents.OnError( TConvVariant.FromRecord<TGUID>( AGUID ), AText, AError.Message );
+    False:
+      Self.FEvents.OnError( TConvVariant.FromRecord<TGUID>( AGUID ), AText, string.Empty );
+  end;
 end;
 {$ENDREGION}
 
@@ -194,21 +236,11 @@ end;
 //Открываем/Закрываем сокет.
 procedure TISocket.Open;
 begin
-  try
-    FSocket.ClientSocket.Custom.Active := True;
-  except
-    on E:Exception do
-      Self.Warder.CrtError(E.Message);
-  end;
+  FSocket.Execute( smOpen );
 end;
 procedure TISocket.Close;
 begin
-  try
-    FSocket.ClientSocket.Custom.Active := False;
-  except
-    on E:Exception do
-      Self.Warder.CrtError(E.Message);
-  end;
+  FSocket.Execute( smClose );
 end;
 {$ENDREGION}
 end.

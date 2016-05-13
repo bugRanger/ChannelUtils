@@ -12,7 +12,7 @@ unit ChannelUtils_TLB;
 // ************************************************************************ //
 
 // $Rev: 52393 $
-// File generated on 10.05.2016 16:00:49 from Type Library described below.
+// File generated on 12.05.2016 14:56:12 from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: D:\Projects\InDeveloping\ChannelUtils\Source\ComInterfaces\ChannelUtils (1)
@@ -50,6 +50,7 @@ const
   LIBID_ChannelUtils: TGUID = '{7992BFC5-ABE3-4242-816B-DA90AE41D75D}';
 
   IID_ICoChannelUtils: TGUID = '{D3B687E1-48C5-4DA2-88E8-781F5B34935B}';
+  IID_ISession: TGUID = '{C5C46EE4-B117-44B4-A9B5-CB705C9FAC46}';
   IID_IComPort: TGUID = '{EF7B9287-2F23-4A8C-8876-36FF41A2B00C}';
   IID_ISocket: TGUID = '{788F821C-DC1E-4EDD-8FE6-B943A94131EA}';
   DIID_ICoChannelUtilsEvents: TGUID = '{1F94FBFD-0AEF-4C39-ABCC-B1F1C41CB3E0}';
@@ -107,6 +108,8 @@ type
 // *********************************************************************//
   ICoChannelUtils = interface;
   ICoChannelUtilsDisp = dispinterface;
+  ISession = interface;
+  ISessionDisp = dispinterface;
   IComPort = interface;
   IComPortDisp = dispinterface;
   ISocket = interface;
@@ -141,6 +144,39 @@ type
   end;
 
 // *********************************************************************//
+// Interface: ISession
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C5C46EE4-B117-44B4-A9B5-CB705C9FAC46}
+// *********************************************************************//
+  ISession = interface(IDispatch)
+    ['{C5C46EE4-B117-44B4-A9B5-CB705C9FAC46}']
+    function Get_StartDT: TDateTime; safecall;
+    function Get_FinishDT: TDateTime; safecall;
+    function Get_Duration: Largeuint; safecall;
+    function Get_Success: Largeuint; safecall;
+    function Get_Fail: Largeuint; safecall;
+    property StartDT: TDateTime read Get_StartDT;
+    property FinishDT: TDateTime read Get_FinishDT;
+    property Duration: Largeuint read Get_Duration;
+    property Success: Largeuint read Get_Success;
+    property Fail: Largeuint read Get_Fail;
+  end;
+
+// *********************************************************************//
+// DispIntf:  ISessionDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C5C46EE4-B117-44B4-A9B5-CB705C9FAC46}
+// *********************************************************************//
+  ISessionDisp = dispinterface
+    ['{C5C46EE4-B117-44B4-A9B5-CB705C9FAC46}']
+    property StartDT: TDateTime readonly dispid 201;
+    property FinishDT: TDateTime readonly dispid 202;
+    property Duration: Largeuint readonly dispid 203;
+    property Success: Largeuint readonly dispid 204;
+    property Fail: Largeuint readonly dispid 205;
+  end;
+
+// *********************************************************************//
 // Interface: IComPort
 // Flags:     (4416) Dual OleAutomation Dispatchable
 // GUID:      {EF7B9287-2F23-4A8C-8876-36FF41A2B00C}
@@ -159,6 +195,7 @@ type
     procedure Set_StopBits(AValue: TStopBits); safecall;
     function Get_BufSize: Word; safecall;
     procedure Set_BufSize(AValue: Word); safecall;
+    function Get_Session: ISession; safecall;
     function Get_ReadIntervalTimeout: Word; safecall;
     procedure Set_ReadIntervalTimeout(AValue: Word); safecall;
     function Get_ReadTotalTimeoutConstant: Word; safecall;
@@ -181,6 +218,7 @@ type
     property Parity: TParity read Get_Parity write Set_Parity;
     property StopBits: TStopBits read Get_StopBits write Set_StopBits;
     property BufSize: Word read Get_BufSize write Set_BufSize;
+    property Session: ISession read Get_Session;
     property ReadIntervalTimeout: Word read Get_ReadIntervalTimeout write Set_ReadIntervalTimeout;
     property ReadTotalTimeoutConstant: Word read Get_ReadTotalTimeoutConstant write Set_ReadTotalTimeoutConstant;
     property ReadTotalTimeoutMultiplier: Word read Get_ReadTotalTimeoutMultiplier write Set_ReadTotalTimeoutMultiplier;
@@ -201,6 +239,7 @@ type
     property Parity: TParity dispid 204;
     property StopBits: TStopBits dispid 205;
     property BufSize: Word dispid 206;
+    property Session: ISession readonly dispid 218;
     property ReadIntervalTimeout: Word dispid 207;
     property ReadTotalTimeoutConstant: Word dispid 208;
     property ReadTotalTimeoutMultiplier: Word dispid 209;
@@ -232,6 +271,7 @@ type
     procedure Set_TotalTime(AValue: Word); safecall;
     function Get_Reconnect: Int64; safecall;
     procedure Set_Reconnect(Value: Int64); safecall;
+    function Get_Session: ISession; safecall;
     procedure Open; safecall;
     procedure Close; safecall;
     function Connected: WordBool; safecall;
@@ -242,6 +282,7 @@ type
     property Port: Integer read Get_Port write Set_Port;
     property TotalTime: Word read Get_TotalTime write Set_TotalTime;
     property Reconnect: Int64 read Get_Reconnect write Set_Reconnect;
+    property Session: ISession read Get_Session;
   end;
 
 // *********************************************************************//
@@ -255,6 +296,7 @@ type
     property Port: Integer dispid 202;
     property TotalTime: Word dispid 203;
     property Reconnect: Int64 dispid 204;
+    property Session: ISession readonly dispid 205;
     procedure Open; dispid 212;
     procedure Close; dispid 213;
     function Connected: WordBool; dispid 217;
@@ -279,6 +321,8 @@ type
                     AErrorCode: Word; AResult: TResultExec): HResult; dispid 202;
     function OnWrite(AReturn: {NOT_OLEAUTO(PSafeArray)}OleVariant; ABytesTrans: Word;
                      AErrorCode: Word; AResult: TResultExec): HResult; dispid 203;
+    function OnError(AGUID: OleVariant; const AText: WideString; const AMessage: WideString): HResult; dispid 204;
+    function OnInfo(AGUID: OleVariant; const AMessage: WideString): HResult; dispid 205;
   end;
 
 // *********************************************************************//

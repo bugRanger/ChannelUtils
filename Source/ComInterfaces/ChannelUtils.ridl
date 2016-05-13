@@ -6,7 +6,7 @@
 // However, when applying changes via the Editor this file will be regenerated
 // and comments or formatting changes will be lost.
 // ************************************************************************ //
-// File generated on 10.05.2016 17:43:51 (- $Rev: 12980 $, 355649394).
+// File generated on 12.05.2016 18:03:45 (- $Rev: 12980 $, 529642722).
 
 [
   uuid(7992BFC5-ABE3-4242-816B-DA90AE41D75D),
@@ -20,6 +20,7 @@ library ChannelUtils
   importlib("stdole2.tlb");
 
   interface ICoChannelUtils;
+  interface ISession;
   interface IComPort;
   interface ISocket;
   dispinterface ICoChannelUtilsEvents;
@@ -91,6 +92,25 @@ library ChannelUtils
   };
 
   [
+    uuid(C5C46EE4-B117-44B4-A9B5-CB705C9FAC46),
+    dual,
+    oleautomation
+  ]
+  interface ISession: IDispatch
+  {
+    [propget, id(0x000000C9)]
+    HRESULT _stdcall StartDT([out, retval] DATE* Value);
+    [propget, id(0x000000CA)]
+    HRESULT _stdcall FinishDT([out, retval] DATE* Value);
+    [propget, id(0x000000CB)]
+    HRESULT _stdcall Duration([out, retval] unsigned __int64* Value);
+    [propget, id(0x000000CC)]
+    HRESULT _stdcall Success([out, retval] unsigned __int64* Value);
+    [propget, id(0x000000CD)]
+    HRESULT _stdcall Fail([out, retval] unsigned __int64* Value);
+  };
+
+  [
     uuid(EF7B9287-2F23-4A8C-8876-36FF41A2B00C),
     dual,
     oleautomation
@@ -121,6 +141,8 @@ library ChannelUtils
     HRESULT _stdcall BufSize([out, retval] unsigned short* AValue);
     [propput, id(0x000000CE)]
     HRESULT _stdcall BufSize([in] unsigned short AValue);
+    [propget, id(0x000000DA)]
+    HRESULT _stdcall Session([out, retval] ISession** Value);
     [propget, id(0x000000CF)]
     HRESULT _stdcall ReadIntervalTimeout([out, retval] unsigned short* AValue);
     [propput, id(0x000000CF)]
@@ -178,6 +200,8 @@ library ChannelUtils
     HRESULT _stdcall Reconnect([out, retval] __int64* Value);
     [propput, id(0x000000CC)]
     HRESULT _stdcall Reconnect([in] __int64 Value);
+    [propget, id(0x000000CD)]
+    HRESULT _stdcall Session([out, retval] ISession** Value);
     [id(0x000000D4)]
     HRESULT _stdcall Open(void);
     [id(0x000000D5)]
@@ -206,6 +230,10 @@ library ChannelUtils
     HRESULT OnRead([in] SAFEARRAY(long) AQuery, [in] unsigned short ABytesTrans, [in] unsigned short AErrorCode, [in] enum TResultExec AResult);
     [id(0x000000CB)]
     HRESULT OnWrite([in] SAFEARRAY(long) AReturn, [in] unsigned short ABytesTrans, [in] unsigned short AErrorCode, [in] enum TResultExec AResult);
+    [id(0x000000CC)]
+    HRESULT OnError([in] VARIANT AGUID, [in] BSTR AText, [in] BSTR AMessage);
+    [id(0x000000CD)]
+    HRESULT OnInfo([in] VARIANT AGUID, [in] BSTR AMessage);
   };
 
   [
