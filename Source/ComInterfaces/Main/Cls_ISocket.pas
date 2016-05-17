@@ -4,7 +4,7 @@ interface
   uses
     System.Win.ObjComAuto, //TObjectDispatch.
     System.SysUtils,
-    Winapi.ActiveX,
+    Winapi.ActiveX,   //PSafeArray.
 
     ChannelUtils_TLB,
 
@@ -19,7 +19,8 @@ interface
 
   type
     {$REGION ' TISocket '}
-    TISocket = class( TObjectDispatch, ChannelUtils_TLB.ISocket, IWarderClass<TISocket> )
+    TISocket = class( TObjectDispatch, ChannelUtils_TLB.ISocket, IReconnect,
+      IWarderClass<TISocket> )
       const
         cTagHost = '127.0.0.1';
         cTagPort = 0;
@@ -34,19 +35,25 @@ interface
         function Get_Host: WideString; safecall;
         function Get_Port: Integer; safecall;
         function Get_TotalTime: Word; safecall;
-        function Get_Reconnect: Int64; safecall;
+        function Get_ReactivateTime: Int64; safecall;
+        function Get_Reconnect: IReconnect; safecall;
+        function Get_Attempts: UInt64; safecall;
+        function Get_Interval: UInt64; safecall;
         function Get_Session: ISession; safecall;
         procedure Set_Host(const AValue: WideString); safecall;
         procedure Set_Port(AValue: Integer); safecall;
         procedure Set_TotalTime(AValue: Word); safecall;
-        procedure Set_Reconnect(AValue: Int64); safecall;
+        procedure Set_ReactivateTime(AValue: Int64); safecall;
+        procedure Set_Attempts(AValue: UInt64); safecall;
+        procedure Set_Interval(AValue: UInt64); safecall;
       private
         function GetWarder(): IWarderClass<TISocket>;
       public
         property Host: WideString read Get_Host write Set_Host;
         property Port: Integer read Get_Port write Set_Port;
         property TotalTime: Word read Get_TotalTime write Set_TotalTime;
-        property Reconnect: Int64 read Get_Reconnect write Set_Reconnect;
+        property ReactivateTime: Int64 read Get_ReactivateTime write Set_ReactivateTime;
+        property Reconnect: IReconnect read Get_Reconnect;
         property Session: ChannelUtils_TLB.ISession read Get_Session;
       public
         property Warder: IWarderClass<TISocket> read GetWarder implements IWarderClass<TISocket>;
@@ -115,6 +122,7 @@ function TISocket.GetWarder: IWarderClass<TISocket>;
 begin
   Result := FWarder;
 end;
+
 function TISocket.Get_Host: WideString;
 begin
   Result := FSocket.ClientSocket.Custom.Host;
@@ -127,9 +135,21 @@ function TISocket.Get_TotalTime: Word;
 begin
   Result := FSocket.ExchangeTM;
 end;
-function TISocket.Get_Reconnect: Int64;
+function TISocket.Get_ReactivateTime: Int64;
 begin
   Result := FSocket.ClientSocket.Reconnect.Interval;
+end;
+function TISocket.Get_Reconnect: IReconnect;
+begin
+  Result := Self as IReconnect;
+end;
+function TISocket.Get_Attempts: UInt64;
+begin
+  Result := FSocket.Attempts;
+end;
+function TISocket.Get_Interval: UInt64;
+begin
+  Result := FSocket.Interval;
 end;
 function TISocket.Get_Session: ISession;
 begin
@@ -148,10 +168,18 @@ procedure TISocket.Set_TotalTime(AValue: Word);
 begin
   FSocket.ExchangeTM := AValue;
 end;
-procedure TISocket.Set_Reconnect(AValue: Int64);
+procedure TISocket.Set_ReactivateTime(AValue: Int64);
 begin//Сначало указываем что будет запуск, потом значение.
   //Иначе таймер сразу пойдет на выполнение, что приведет к двойному открытию.
   FSocket.ClientSocket.Reconnect.Interval := AValue;
+end;
+procedure TISocket.Set_Attempts(AValue: UInt64);
+begin
+  FSocket.Attempts := AValue;
+end;
+procedure TISocket.Set_Interval(AValue: UInt64);
+begin
+  FSocket.Interval := AValue;
 end;
 {$ENDREGION}
 {$REGION ' События. '}

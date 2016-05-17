@@ -6,7 +6,7 @@
 // However, when applying changes via the Editor this file will be regenerated
 // and comments or formatting changes will be lost.
 // ************************************************************************ //
-// File generated on 12.05.2016 18:03:45 (- $Rev: 12980 $, 529642722).
+// File generated on 17.05.2016 14:40:23 (- $Rev: 12980 $, 949473050).
 
 [
   uuid(7992BFC5-ABE3-4242-816B-DA90AE41D75D),
@@ -25,6 +25,7 @@ library ChannelUtils
   interface ISocket;
   dispinterface ICoChannelUtilsEvents;
   coclass CoChannelUtils;
+  interface IReconnect;
 
 
   [
@@ -141,6 +142,8 @@ library ChannelUtils
     HRESULT _stdcall BufSize([out, retval] unsigned short* AValue);
     [propput, id(0x000000CE)]
     HRESULT _stdcall BufSize([in] unsigned short AValue);
+    [propget, id(0x000000DB)]
+    HRESULT _stdcall Reconnect([out, retval] IReconnect** Value);
     [propget, id(0x000000DA)]
     HRESULT _stdcall Session([out, retval] ISession** Value);
     [propget, id(0x000000CF)]
@@ -197,9 +200,11 @@ library ChannelUtils
     [propput, id(0x000000CB)]
     HRESULT _stdcall TotalTime([in] unsigned short AValue);
     [propget, id(0x000000CC)]
-    HRESULT _stdcall Reconnect([out, retval] __int64* Value);
+    HRESULT _stdcall ReactivateTime([out, retval] __int64* Value);
     [propput, id(0x000000CC)]
-    HRESULT _stdcall Reconnect([in] __int64 Value);
+    HRESULT _stdcall ReactivateTime([in] __int64 Value);
+    [propget, id(0x000000CE)]
+    HRESULT _stdcall Reconnect([out, retval] IReconnect** Value);
     [propget, id(0x000000CD)]
     HRESULT _stdcall Session([out, retval] ISession** Value);
     [id(0x000000D4)]
@@ -217,6 +222,23 @@ library ChannelUtils
   };
 
   [
+    uuid(DCBA7ACB-CA98-47CF-9620-47E66FBF6F53),
+    dual,
+    oleautomation
+  ]
+  interface IReconnect: IDispatch
+  {
+    [propget, id(0x000000C9)]
+    HRESULT _stdcall Attempts([out, retval] unsigned __int64* AValue);
+    [propput, id(0x000000C9)]
+    HRESULT _stdcall Attempts([in] unsigned __int64 AValue);
+    [propget, id(0x000000CA)]
+    HRESULT _stdcall Interval([out, retval] unsigned __int64* AValue);
+    [propput, id(0x000000CA)]
+    HRESULT _stdcall Interval([in] unsigned __int64 AValue);
+  };
+
+  [
     uuid(1F94FBFD-0AEF-4C39-ABCC-B1F1C41CB3E0),
     helpstring("Events interface for CoChannelUtils Object")
   ]
@@ -227,9 +249,9 @@ library ChannelUtils
     [id(0x000000C9)]
     HRESULT OnExchange([in] SAFEARRAY(long) AQuery, [in] SAFEARRAY(long) AReturn, [in] enum TResultExec AResult);
     [id(0x000000CA)]
-    HRESULT OnRead([in] SAFEARRAY(long) AQuery, [in] unsigned short ABytesTrans, [in] unsigned short AErrorCode, [in] enum TResultExec AResult);
+    HRESULT OnWrite([in] SAFEARRAY(long) AQuery, [in] unsigned short ABytesTrans, [in] unsigned short AErrorCode, [in] enum TResultExec AResult);
     [id(0x000000CB)]
-    HRESULT OnWrite([in] SAFEARRAY(long) AReturn, [in] unsigned short ABytesTrans, [in] unsigned short AErrorCode, [in] enum TResultExec AResult);
+    HRESULT OnRead([in] SAFEARRAY(long) AReturn, [in] unsigned short ABytesTrans, [in] unsigned short AErrorCode, [in] enum TResultExec AResult);
     [id(0x000000CC)]
     HRESULT OnError([in] VARIANT AGUID, [in] BSTR AText, [in] BSTR AMessage);
     [id(0x000000CD)]

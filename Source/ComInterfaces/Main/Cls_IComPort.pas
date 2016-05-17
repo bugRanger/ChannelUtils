@@ -10,7 +10,7 @@ interface
 
     Cls_ISession,
 
-    Cls_TComPort,
+    Cls_ComPort,
 
     Cls_Buffer,
     Cls_Warder,
@@ -19,7 +19,8 @@ interface
 
   type
     {$REGION ' TIComPort '}
-    TIComPort = class( TObjectDispatch, ChannelUtils_TLB.IComPort, IWarderClass<TIComPort> )
+    TIComPort = class( TObjectDispatch, ChannelUtils_TLB.IComPort, IReconnect,
+      IWarderClass<TIComPort> )
       private
         FComPort  : TComPort;
         FEvents   : ICoChannelUtilsEvents;
@@ -33,24 +34,29 @@ interface
         function Get_ByteSize: ChannelUtils_TLB.TByteSize; safecall;
         function Get_Parity: ChannelUtils_TLB.TParity; safecall;
         function Get_StopBits: ChannelUtils_TLB.TStopBits; safecall;
-        function Get_BufSize: Word; safecall;
         function Get_ReadIntervalTimeout: Word; safecall;
         function Get_ReadTotalTimeoutConstant: Word; safecall;
         function Get_ReadTotalTimeoutMultiplier: Word; safecall;
         function Get_WriteTotalTimeoutConstant: Word; safecall;
         function Get_WriteTotalTimeoutMultiplier: Word; safecall;
+        function Get_BufSize: Word; safecall;
+        function Get_Reconnect: IReconnect; safecall;
+        function Get_Attempts: UInt64; safecall;
+        function Get_Interval: UInt64; safecall;
         function Get_Session: ISession; safecall;
         procedure Set_Number(AValue: Word); safecall;
         procedure Set_BaudRate(AValue: Word); safecall;
         procedure Set_ByteSize(AValue: ChannelUtils_TLB.TByteSize); safecall;
         procedure Set_Parity(AValue: ChannelUtils_TLB.TParity); safecall;
         procedure Set_StopBits(AValue: ChannelUtils_TLB.TStopBits); safecall;
-        procedure Set_BufSize(AValue: Word); safecall;
         procedure Set_ReadIntervalTimeout(AValue: Word); safecall;
         procedure Set_ReadTotalTimeoutConstant(AValue: Word); safecall;
         procedure Set_ReadTotalTimeoutMultiplier(AValue: Word); safecall;
         procedure Set_WriteTotalTimeoutConstant(AValue: Word); safecall;
         procedure Set_WriteTotalTimeoutMultiplier(AValue: Word); safecall;
+        procedure Set_BufSize(AValue: Word); safecall;
+        procedure Set_Attempts(AValue: UInt64); safecall;
+        procedure Set_Interval(AValue: UInt64); safecall;
       private
         function GetWarder(): IWarderClass<TIComPort>;
       public
@@ -60,6 +66,7 @@ interface
         property Parity: ChannelUtils_TLB.TParity read Get_Parity write Set_Parity;
         property StopBits: ChannelUtils_TLB.TStopBits read Get_StopBits write Set_StopBits;
         property BufSize: Word read Get_BufSize write Set_BufSize;
+        property Reconnect: IReconnect read Get_Reconnect;
         property Session: ChannelUtils_TLB.ISession read Get_Session;
       public
         property ReadIntervalTimeout: Word read Get_ReadIntervalTimeout write Set_ReadIntervalTimeout;
@@ -150,14 +157,6 @@ function TIComPort.Get_StopBits: ChannelUtils_TLB.TStopBits;
 begin
   Result := ChannelUtils_TLB.TStopBits( FComPort.StopBits );
 end;
-function TIComPort.Get_BufSize: Word;
-begin
-  Result := FComPort.BufSize;
-end;
-function TIComPort.Get_Session: ISession;
-begin
-  Result := FSession;
-end;
 function TIComPort.Get_ReadIntervalTimeout: Word;
 begin
   Result := FComPort.ReadIntervalTimeout;
@@ -178,6 +177,26 @@ function TIComPort.Get_WriteTotalTimeoutMultiplier: Word;
 begin
   Result := FComPort.WriteTotalTimeoutMultiplier;
 end;
+function TIComPort.Get_BufSize: Word;
+begin
+  Result := FComPort.BufSize;
+end;
+function TIComPort.Get_Reconnect: IReconnect;
+begin
+  Result := Self as IReconnect;
+end;
+function TIComPort.Get_Attempts: UInt64;
+begin
+  Result := FComPort.Attempts;
+end;
+function TIComPort.Get_Interval: UInt64;
+begin
+  Result := FComPort.Interval;
+end;
+function TIComPort.Get_Session: ISession;
+begin
+  Result := FSession;
+end;
 //Присвоение значения.
 procedure TIComPort.Set_Number(AValue: Word);
 begin
@@ -186,10 +205,6 @@ end;
 procedure TIComPort.Set_BaudRate(AValue: Word);
 begin
   FComPort.BaudRate := AValue;
-end;
-procedure TIComPort.Set_BufSize(AValue: Word);
-begin
-  FComPort.BufSize := AValue;
 end;
 procedure TIComPort.Set_ByteSize(AValue: ChannelUtils_TLB.TByteSize);
 begin
@@ -222,6 +237,18 @@ end;
 procedure TIComPort.Set_WriteTotalTimeoutMultiplier(AValue: Word);
 begin
   FComPort.WriteTotalTimeoutMultiplier := AValue;
+end;
+procedure TIComPort.Set_BufSize(AValue: Word);
+begin
+  FComPort.BufSize := AValue;
+end;
+procedure TIComPort.Set_Attempts(AValue: UInt64);
+begin
+  FComPort.Attempts := AValue;
+end;
+procedure TIComPort.Set_Interval(AValue: UInt64);
+begin
+  FComPort.Interval := AValue;
 end;
 {$ENDREGION}
 

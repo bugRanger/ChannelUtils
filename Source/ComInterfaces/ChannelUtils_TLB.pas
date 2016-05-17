@@ -12,7 +12,7 @@ unit ChannelUtils_TLB;
 // ************************************************************************ //
 
 // $Rev: 52393 $
-// File generated on 12.05.2016 14:56:12 from Type Library described below.
+// File generated on 17.05.2016 14:40:21 from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: D:\Projects\InDeveloping\ChannelUtils\Source\ComInterfaces\ChannelUtils (1)
@@ -55,6 +55,7 @@ const
   IID_ISocket: TGUID = '{788F821C-DC1E-4EDD-8FE6-B943A94131EA}';
   DIID_ICoChannelUtilsEvents: TGUID = '{1F94FBFD-0AEF-4C39-ABCC-B1F1C41CB3E0}';
   CLASS_CoChannelUtils: TGUID = '{74C42692-DB68-4FB8-953A-5B278CD55419}';
+  IID_IReconnect: TGUID = '{DCBA7ACB-CA98-47CF-9620-47E66FBF6F53}';
 
 // *********************************************************************//
 // Declaration of Enumerations defined in Type Library
@@ -115,6 +116,8 @@ type
   ISocket = interface;
   ISocketDisp = dispinterface;
   ICoChannelUtilsEvents = dispinterface;
+  IReconnect = interface;
+  IReconnectDisp = dispinterface;
 
 // *********************************************************************//
 // Declaration of CoClasses defined in Type Library
@@ -195,6 +198,7 @@ type
     procedure Set_StopBits(AValue: TStopBits); safecall;
     function Get_BufSize: Word; safecall;
     procedure Set_BufSize(AValue: Word); safecall;
+    function Get_Reconnect: IReconnect; safecall;
     function Get_Session: ISession; safecall;
     function Get_ReadIntervalTimeout: Word; safecall;
     procedure Set_ReadIntervalTimeout(AValue: Word); safecall;
@@ -218,6 +222,7 @@ type
     property Parity: TParity read Get_Parity write Set_Parity;
     property StopBits: TStopBits read Get_StopBits write Set_StopBits;
     property BufSize: Word read Get_BufSize write Set_BufSize;
+    property Reconnect: IReconnect read Get_Reconnect;
     property Session: ISession read Get_Session;
     property ReadIntervalTimeout: Word read Get_ReadIntervalTimeout write Set_ReadIntervalTimeout;
     property ReadTotalTimeoutConstant: Word read Get_ReadTotalTimeoutConstant write Set_ReadTotalTimeoutConstant;
@@ -239,6 +244,7 @@ type
     property Parity: TParity dispid 204;
     property StopBits: TStopBits dispid 205;
     property BufSize: Word dispid 206;
+    property Reconnect: IReconnect readonly dispid 219;
     property Session: ISession readonly dispid 218;
     property ReadIntervalTimeout: Word dispid 207;
     property ReadTotalTimeoutConstant: Word dispid 208;
@@ -269,8 +275,9 @@ type
     procedure Set_Port(AValue: Integer); safecall;
     function Get_TotalTime: Word; safecall;
     procedure Set_TotalTime(AValue: Word); safecall;
-    function Get_Reconnect: Int64; safecall;
-    procedure Set_Reconnect(Value: Int64); safecall;
+    function Get_ReactivateTime: Int64; safecall;
+    procedure Set_ReactivateTime(Value: Int64); safecall;
+    function Get_Reconnect: IReconnect; safecall;
     function Get_Session: ISession; safecall;
     procedure Open; safecall;
     procedure Close; safecall;
@@ -281,7 +288,8 @@ type
     property Host: WideString read Get_Host write Set_Host;
     property Port: Integer read Get_Port write Set_Port;
     property TotalTime: Word read Get_TotalTime write Set_TotalTime;
-    property Reconnect: Int64 read Get_Reconnect write Set_Reconnect;
+    property ReactivateTime: Int64 read Get_ReactivateTime write Set_ReactivateTime;
+    property Reconnect: IReconnect read Get_Reconnect;
     property Session: ISession read Get_Session;
   end;
 
@@ -295,7 +303,8 @@ type
     property Host: WideString dispid 201;
     property Port: Integer dispid 202;
     property TotalTime: Word dispid 203;
-    property Reconnect: Int64 dispid 204;
+    property ReactivateTime: Int64 dispid 204;
+    property Reconnect: IReconnect readonly dispid 206;
     property Session: ISession readonly dispid 205;
     procedure Open; dispid 212;
     procedure Close; dispid 213;
@@ -317,12 +326,38 @@ type
     ['{1F94FBFD-0AEF-4C39-ABCC-B1F1C41CB3E0}']
     function OnExchange(AQuery: {NOT_OLEAUTO(PSafeArray)}OleVariant;
                         AReturn: {NOT_OLEAUTO(PSafeArray)}OleVariant; AResult: TResultExec): HResult; dispid 201;
-    function OnRead(AQuery: {NOT_OLEAUTO(PSafeArray)}OleVariant; ABytesTrans: Word;
-                    AErrorCode: Word; AResult: TResultExec): HResult; dispid 202;
-    function OnWrite(AReturn: {NOT_OLEAUTO(PSafeArray)}OleVariant; ABytesTrans: Word;
-                     AErrorCode: Word; AResult: TResultExec): HResult; dispid 203;
+    function OnWrite(AQuery: {NOT_OLEAUTO(PSafeArray)}OleVariant; ABytesTrans: Word;
+                     AErrorCode: Word; AResult: TResultExec): HResult; dispid 202;
+    function OnRead(AReturn: {NOT_OLEAUTO(PSafeArray)}OleVariant; ABytesTrans: Word;
+                    AErrorCode: Word; AResult: TResultExec): HResult; dispid 203;
     function OnError(AGUID: OleVariant; const AText: WideString; const AMessage: WideString): HResult; dispid 204;
     function OnInfo(AGUID: OleVariant; const AMessage: WideString): HResult; dispid 205;
+  end;
+
+// *********************************************************************//
+// Interface: IReconnect
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {DCBA7ACB-CA98-47CF-9620-47E66FBF6F53}
+// *********************************************************************//
+  IReconnect = interface(IDispatch)
+    ['{DCBA7ACB-CA98-47CF-9620-47E66FBF6F53}']
+    function Get_Attempts: Largeuint; safecall;
+    procedure Set_Attempts(AValue: Largeuint); safecall;
+    function Get_Interval: Largeuint; safecall;
+    procedure Set_Interval(AValue: Largeuint); safecall;
+    property Attempts: Largeuint read Get_Attempts write Set_Attempts;
+    property Interval: Largeuint read Get_Interval write Set_Interval;
+  end;
+
+// *********************************************************************//
+// DispIntf:  IReconnectDisp
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {DCBA7ACB-CA98-47CF-9620-47E66FBF6F53}
+// *********************************************************************//
+  IReconnectDisp = dispinterface
+    ['{DCBA7ACB-CA98-47CF-9620-47E66FBF6F53}']
+    property Attempts: Largeuint dispid 201;
+    property Interval: Largeuint dispid 202;
   end;
 
 // *********************************************************************//

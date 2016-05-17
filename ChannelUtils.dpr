@@ -2,7 +2,7 @@ library ChannelUtils;
 
 uses
   ComServ,
-  Cls_TComPort in '..\_source\Exchange\Cls_TComPort.pas',
+  Cls_ComPort in '..\_source\Exchange\Cls_ComPort.pas',
   Cls_Exchange in '..\_source\Exchange\Cls_Exchange.pas',
   Cls_Warder in '..\_source\Log\Cls_Warder.pas',
   Cls_Others in '..\_source\Others\Cls_Others.pas',
