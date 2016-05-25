@@ -30,4 +30,5 @@ exports
 {$R *.RES}
 
 begin
+  IsMultiThread := True;
 end.

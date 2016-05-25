@@ -67,7 +67,7 @@ end;
 
 initialization
   TAutoObjectFactory.Create(ComServer, TCoCannalUtils, Class_CoChannelUtils,
-    ciMultiInstance, tmApartment);
+    ciMultiInstance, tmFree);
 //  if Comserver.StartMode = smAutomation then
 //    ComObj.CoAddRefServerProcess;
 finalization
