@@ -74,7 +74,7 @@ interface
         procedure Open; safecall;
         procedure Close; safecall;
       public
-        constructor Create(AEvents: ICoChannelUtilsEvents = nil); overload;
+        constructor Create(AClose: THandle = INVALID_HANDLE_VALUE; AEvents: ICoChannelUtilsEvents = nil); overload;
         destructor Destroy; override;
     end;
     TISocketWarder = class( TWarderClass<TISocket> );
@@ -89,7 +89,7 @@ implementation
 
 {$REGION ' TISocket '}
 //Создание/Разрушение класса.
-constructor TISocket.Create(AEvents: ICoChannelUtilsEvents);
+constructor TISocket.Create(AClose: THandle; AEvents: ICoChannelUtilsEvents);
 begin
   inherited Create( nil );
   //Надзиратель.
@@ -99,7 +99,7 @@ begin
   //Присвоение.
   FEvents := AEvents;
   //Создание.
-  FSocket := TSocketCtrl<IUnknown>.Create( cTagHost, cTagPort, FWarder );
+  FSocket := TSocketCtrl<IUnknown>.Create( cTagHost, cTagPort, AClose, FWarder );
     FSocket.OnExchange  := Self.OnExchange;
     FSocket.OnWrite     := Self.OnWrite;
     FSocket.OnRead      := Self.OnRead;

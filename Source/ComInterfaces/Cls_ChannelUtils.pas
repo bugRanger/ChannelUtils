@@ -21,7 +21,7 @@ interface
       public
         procedure Initialize; override;
       protected
-        function Create(AKind: TPortKind; out AValue: IUnknown): WordBool; safecall;
+        function Create(AKind: TPortKind; out AValue: IUnknown; AClose: LongWord): WordBool; safecall;
         { Protected declarations }
         property ConnectionPoints: TConnectionPoints read FConnectionPoints implements IConnectionPointContainer;
         procedure EventSinkChanged(const EventSink: IUnknown); override;
@@ -36,6 +36,7 @@ interface
 implementation
   uses
     ComServ,
+
     Cls_IComPort,
     Cls_ISocket;
 
@@ -54,13 +55,14 @@ begin
   else FConnectionPoint := nil;
 end;
 
-function TCoCannalUtils.Create(AKind: TPortKind; out AValue: IUnknown): WordBool;
+function TCoCannalUtils.Create(AKind: TPortKind; out AValue: IUnknown; AClose: LongWord): WordBool;
 begin Result := False;
+  AValue := nil;
   case Ord( AKind ) of
     pkComPort:
-      AValue := TIComPort.Create( FEvents );
+      AValue := TIComPort.Create( AClose, FEvents );
     pkSocket:
-      AValue := TISocket.Create( FEvents );
+      AValue := TISocket.Create( AClose, FEvents );
   end;
   Result := Assigned( AValue );
 end;

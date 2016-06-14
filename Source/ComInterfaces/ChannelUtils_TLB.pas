@@ -12,7 +12,7 @@ unit ChannelUtils_TLB;
 // ************************************************************************ //
 
 // $Rev: 52393 $
-// File generated on 17.05.2016 14:40:21 from Type Library described below.
+// File generated on 14.06.2016 18:37:55 from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: D:\Projects\InDeveloping\ChannelUtils\Source\ComInterfaces\ChannelUtils (1)
@@ -133,7 +133,7 @@ type
 // *********************************************************************//
   ICoChannelUtils = interface(IDispatch)
     ['{D3B687E1-48C5-4DA2-88E8-781F5B34935B}']
-    function Create(AKind: TPortKind; out AValue: IUnknown): WordBool; safecall;
+    function Create(AKind: TPortKind; out AValue: IUnknown; AClose: LongWord): WordBool; safecall;
   end;
 
 // *********************************************************************//
@@ -143,7 +143,7 @@ type
 // *********************************************************************//
   ICoChannelUtilsDisp = dispinterface
     ['{D3B687E1-48C5-4DA2-88E8-781F5B34935B}']
-    function Create(AKind: TPortKind; out AValue: IUnknown): WordBool; dispid 201;
+    function Create(AKind: TPortKind; out AValue: IUnknown; AClose: LongWord): WordBool; dispid 201;
   end;
 
 // *********************************************************************//

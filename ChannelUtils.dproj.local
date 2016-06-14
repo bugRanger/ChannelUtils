@@ -29,10 +29,10 @@
     <Transaction>1899.12.30 00:00:00.000.197,=D:\Projects\InDeveloping\_source\Exchange\Cls_ThreadWait.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.826,D:\Projects\InDeveloping\PortUtils\Source\ComInterfaces\Main\Unit1.pas=D:\Projects\InDeveloping\PortUtils\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.754,=D:\Projects\InDeveloping\_source\Exchange\Cls_Buffer.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.977,D:\Projects\InDeveloping\_source\Others\Fnc_ConvVariant.pas=</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.412,=D:\Projects\InDeveloping\_source\Others\Fnc_ConvVariant.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.245,D:\Projects\InDeveloping\ChannelUtils\Source\ComInterfaces\Cls_ISession.pas=</Transaction>
     <Transaction>1899.12.30 00:00:00.000.156,=D:\Projects\InDeveloping\_source\Others\Fnc_ConvVariant.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.977,D:\Projects\InDeveloping\_source\Others\Fnc_ConvVariant.pas=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.245,D:\Projects\InDeveloping\ChannelUtils\Source\ComInterfaces\Cls_ISession.pas=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.412,=D:\Projects\InDeveloping\_source\Others\Fnc_ConvVariant.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.821,D:\Projects\InDeveloping\PortUtils\Source\ComInterfaces\CoPortUtils.pas=</Transaction>
     <Transaction>1899.12.30 00:00:00.000.284,D:\Projects\InDeveloping\PortUtils\Cls_ISocket.pas=D:\Projects\InDeveloping\PortUtils\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.381,D:\Projects\InDeveloping\PortUtils\Source\ComInterfaces\Cls_ChannelUtils.pas=D:\Projects\InDeveloping\PortUtils\Source\ComInterfaces\Cls_CannalUtils.pas</Transaction>
@@ -59,8 +59,8 @@
     <Transaction>1899.12.30 00:00:00.000.670,C:\Users\User\Documents\Embarcadero\Studio\Projects\Project1_TLB.pas=C:\Users\User\Documents\Embarcadero\Studio\Projects\ComPort_TLB.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.749,D:\Projects\InDeveloping\PortUtils\Source\ComInterfaces\Cls_CannalUtils.pas=D:\Projects\InDeveloping\PortUtils\Source\ComInterfaces\Cls_PortUtils.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.860,C:\Users\User\Documents\Embarcadero\Studio\Projects\CoPortUtils_TLB.pas=C:\Users\User\Documents\Embarcadero\Studio\Projects\PortUtils_TLB.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.224,=D:\Projects\InDeveloping\ChannelUtils\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.738,=D:\Projects\InDeveloping\ChannelUtils\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.426,=D:\Projects\InDeveloping\ChannelUtils\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.151,=D:\Projects\InDeveloping\_source\Others\Cls_Session.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.126,=D:\Projects\InDeveloping\_source\Others\Cls_Others.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.901,D:\Projects\InDeveloping\ChannelUtils\Source\Hlp_GUID.pas=</Transaction>
@@ -72,7 +72,7 @@
     <Transaction>1899.12.30 00:00:00.000.937,C:\Users\User\Documents\Embarcadero\Studio\Projects\PortUtils_TLB.pas=D:\Projects\InDeveloping\PortUtils\Source\ComInterfaces\PortUtils_TLB.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.076,D:\Projects\InDeveloping\ChannelUtils\Unit1.pas=D:\Projects\InDeveloping\ChannelUtils\Cls_ISession.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.915,=D:\Projects\InDeveloping\ChannelUtils\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.426,=D:\Projects\InDeveloping\ChannelUtils\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.224,=D:\Projects\InDeveloping\ChannelUtils\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.599,D:\Projects\InDeveloping\ChannelUtils\Unit1.pas=D:\Projects\InDeveloping\ChannelUtils\Cls_RecordInfo.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.398,D:\Projects\InDeveloping\ChannelUtils\Unit1.pas=D:\Projects\InDeveloping\ChannelUtils\Cls_Guid.pas</Transaction>
   </Transactions>

@@ -93,7 +93,7 @@ interface
         procedure Open; safecall;
         procedure Close; safecall;
       public
-        constructor Create(AEvents: ICoChannelUtilsEvents = nil); overload;
+        constructor Create(AClose: THandle = INVALID_HANDLE_VALUE; AEvents: ICoChannelUtilsEvents = nil); overload;
         destructor Destroy; override;
     end;
     TIComPortWarder = class( TWarderClass<TIComPort> );
@@ -104,7 +104,7 @@ implementation
     Fnc_ConvVariant;
 
 {$REGION ' TIComPort '}
-constructor TIComPort.Create(AEvents: ICoChannelUtilsEvents);
+constructor TIComPort.Create(AClose: THandle; AEvents: ICoChannelUtilsEvents);
 begin
   inherited Create( nil );
   //Надзиратель.
@@ -114,10 +114,10 @@ begin
   //Присвоение.
   FEvents   := AEvents;
   //Создание.
-  FComPort  := TComPort.Create( FWarder );
+  FComPort  := TComPort.Create( AClose, FWarder );
     FComPort.OnExchangeByte := Self.OnExchange;
-    FComPort.OnWriteByte := Self.OnWrite;
-    FComPort.OnReadByte := Self.OnRead;
+    FComPort.OnWriteByte    := Self.OnWrite;
+    FComPort.OnReadByte     := Self.OnRead;
   //Сессия канала.
   FSession := TISession.Create( FComPort.Session );
 end;
