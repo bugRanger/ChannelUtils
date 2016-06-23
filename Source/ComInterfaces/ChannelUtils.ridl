@@ -6,7 +6,7 @@
 // However, when applying changes via the Editor this file will be regenerated
 // and comments or formatting changes will be lost.
 // ************************************************************************ //
-// File generated on 14.06.2016 18:37:58 (- $Rev: 12980 $, 35849950).
+// File generated on 23.06.2016 9:47:05 (- $Rev: 12980 $, 245829916).
 
 [
   uuid(7992BFC5-ABE3-4242-816B-DA90AE41D75D),
@@ -123,9 +123,9 @@ library ChannelUtils
     [propput, id(0x000000C9)]
     HRESULT _stdcall Number([in] unsigned short AValue);
     [propget, id(0x000000CA)]
-    HRESULT _stdcall BaudRate([out, retval] unsigned short* AValue);
+    HRESULT _stdcall BaudRate([out, retval] unsigned long* AValue);
     [propput, id(0x000000CA)]
-    HRESULT _stdcall BaudRate([in] unsigned short AValue);
+    HRESULT _stdcall BaudRate([in] unsigned long AValue);
     [propget, id(0x000000CB)]
     HRESULT _stdcall ByteSize([out, retval] enum TByteSize* AValue);
     [propput, id(0x000000CB)]

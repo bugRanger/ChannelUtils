@@ -30,7 +30,7 @@ interface
         FWarder   : IWarderClass<TIComPort>;
       private
         function Get_Number: Word; safecall;
-        function Get_BaudRate: Word; safecall;
+        function Get_BaudRate: LongWord; safecall;
         function Get_ByteSize: ChannelUtils_TLB.TByteSize; safecall;
         function Get_Parity: ChannelUtils_TLB.TParity; safecall;
         function Get_StopBits: ChannelUtils_TLB.TStopBits; safecall;
@@ -45,7 +45,7 @@ interface
         function Get_Interval: UInt64; safecall;
         function Get_Session: ISession; safecall;
         procedure Set_Number(AValue: Word); safecall;
-        procedure Set_BaudRate(AValue: Word); safecall;
+        procedure Set_BaudRate(AValue: LongWord); safecall;
         procedure Set_ByteSize(AValue: ChannelUtils_TLB.TByteSize); safecall;
         procedure Set_Parity(AValue: ChannelUtils_TLB.TParity); safecall;
         procedure Set_StopBits(AValue: ChannelUtils_TLB.TStopBits); safecall;
@@ -61,7 +61,7 @@ interface
         function GetWarder(): IWarderClass<TIComPort>;
       public
         property Number: Word read Get_Number write Set_Number;
-        property BaudRate: Word read Get_BaudRate write Set_BaudRate;
+        property BaudRate: LongWord read Get_BaudRate write Set_BaudRate;
         property ByteSize: ChannelUtils_TLB.TByteSize read Get_ByteSize write Set_ByteSize;
         property Parity: ChannelUtils_TLB.TParity read Get_Parity write Set_Parity;
         property StopBits: ChannelUtils_TLB.TStopBits read Get_StopBits write Set_StopBits;
@@ -141,7 +141,7 @@ function TIComPort.Get_Number: Word;
 begin
   Result := FComPort.ComNumber;
 end;
-function TIComPort.Get_BaudRate: Word;
+function TIComPort.Get_BaudRate: LongWord;
 begin
   Result := FComPort.BaudRate;
 end;
@@ -202,7 +202,7 @@ procedure TIComPort.Set_Number(AValue: Word);
 begin
   FComPort.ComNumber := AValue;
 end;
-procedure TIComPort.Set_BaudRate(AValue: Word);
+procedure TIComPort.Set_BaudRate(AValue: LongWord);
 begin
   FComPort.BaudRate := AValue;
 end;

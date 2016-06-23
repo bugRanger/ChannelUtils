@@ -12,7 +12,7 @@ unit ChannelUtils_TLB;
 // ************************************************************************ //
 
 // $Rev: 52393 $
-// File generated on 14.06.2016 18:37:55 from Type Library described below.
+// File generated on 23.06.2016 9:39:46 from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: D:\Projects\InDeveloping\ChannelUtils\Source\ComInterfaces\ChannelUtils (1)
@@ -188,8 +188,8 @@ type
     ['{EF7B9287-2F23-4A8C-8876-36FF41A2B00C}']
     function Get_Number: Word; safecall;
     procedure Set_Number(AValue: Word); safecall;
-    function Get_BaudRate: Word; safecall;
-    procedure Set_BaudRate(AValue: Word); safecall;
+    function Get_BaudRate: LongWord; safecall;
+    procedure Set_BaudRate(AValue: LongWord); safecall;
     function Get_ByteSize: TByteSize; safecall;
     procedure Set_ByteSize(AValue: TByteSize); safecall;
     function Get_Parity: TParity; safecall;
@@ -217,7 +217,7 @@ type
     function Read(out AReturn: PSafeArray; var ABytesTrans: Word; var AErrorCode: Word): TResultExec; safecall;
     function Write(AQuery: PSafeArray; var ABytesTrans: Word; var AErrorCode: Word): TResultExec; safecall;
     property Number: Word read Get_Number write Set_Number;
-    property BaudRate: Word read Get_BaudRate write Set_BaudRate;
+    property BaudRate: LongWord read Get_BaudRate write Set_BaudRate;
     property ByteSize: TByteSize read Get_ByteSize write Set_ByteSize;
     property Parity: TParity read Get_Parity write Set_Parity;
     property StopBits: TStopBits read Get_StopBits write Set_StopBits;
@@ -239,7 +239,7 @@ type
   IComPortDisp = dispinterface
     ['{EF7B9287-2F23-4A8C-8876-36FF41A2B00C}']
     property Number: Word dispid 201;
-    property BaudRate: Word dispid 202;
+    property BaudRate: LongWord dispid 202;
     property ByteSize: TByteSize dispid 203;
     property Parity: TParity dispid 204;
     property StopBits: TStopBits dispid 205;
