@@ -99,7 +99,7 @@ begin
   //Присвоение.
   FEvents := AEvents;
   //Создание.
-  FSocket := TSocketCtrl<IUnknown>.Create( cTagHost, cTagPort, AClose, FWarder );
+  FSocket := TSocketCtrl<IUnknown>.Create( nil, cTagHost, cTagPort, AClose, FWarder );
     FSocket.OnExchange  := Self.OnExchange;
     FSocket.OnWrite     := Self.OnWrite;
     FSocket.OnRead      := Self.OnRead;
