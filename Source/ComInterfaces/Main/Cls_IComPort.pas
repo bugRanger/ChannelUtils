@@ -81,8 +81,8 @@ interface
         procedure OnWrite(const ABuffer: TBuffer; const ABytesTrans, AErrCode: Cardinal; const AResult: TExecuteResult);
         procedure OnRead(const ABuffer: TBuffer; const ABytesTrans, AErrCode: Cardinal; const AResult: TExecuteResult);
       private
-        procedure OnInfo(const AGUID: TGUID; const AText: string; const AType: TWarderMessage);
-        procedure OnError(const AGUID: TGUID; const AText: string; const AType: TWarderMessage; const AError: Exception);
+        procedure OnInfo(const ASender: TObject; const AGUID: TGUID; const AText: string; const AType: TWarderLevel);
+        procedure OnError(const ASender: TObject; const AGUID: TGUID; const AText: string; const AError: Exception; const AType: TWarderLevel);
       public
         function Exchange(AQuery: PSafeArray; out AReturn: PSafeArray): TResultExec; safecall;
         function Write(AQuery: PSafeArray; var ABytesTrans: Word; var AErrorCode: Word): TResultExec; safecall;
@@ -269,15 +269,14 @@ begin
     Self.FEvents.OnRead( ABuffer.ToVariant(), ABytesTrans, AErrCode, TResultExec( AResult ));
 end;
 
-procedure TIComPort.OnInfo(const AGUID: TGUID; const AText: string; const AType: TWarderMessage);
-begin
-  if AType in [ tmSelf, tmComPort ] then
-    Self.FEvents.OnInfo( TConvVariant.FromRecord<TGUID>( AGUID ), AText );
-end;
-procedure TIComPort.OnError(const AGUID: TGUID; const AText: string; const AType: TWarderMessage; const AError: Exception);
+procedure TIComPort.OnInfo(const ASender: TObject; const AGUID: TGUID; const AText: string; const AType: TWarderLevel);
 begin
   if Assigned( Self.FEvents ) then
-    if AType in [ tmSelf, tmComPort ] then
+    Self.FEvents.OnInfo( TConvVariant.FromRecord<TGUID>( AGUID ), AText );
+end;
+procedure TIComPort.OnError(const ASender: TObject; const AGUID: TGUID; const AText: string; const AError: Exception; const AType: TWarderLevel);
+begin
+  if Assigned( Self.FEvents ) then
     case Assigned( AError ) of
       True:
         Self.FEvents.OnError( TConvVariant.FromRecord<TGUID>( AGUID ), AText, AError.Message );
@@ -340,7 +339,7 @@ begin
     FComPort.Open( 0, True );
   except
     on E:Exception do
-      Self.Warder.CallError( cLUID, cMethodName, tmComPort, E );
+      Self.Warder.CallError( cLUID, cMethodName, E );
   end;
 end;
 procedure TIComPort.Close;
@@ -352,7 +351,7 @@ begin
     FComPort.Close();
   except
     on E:Exception do
-      Self.Warder.CallError( cLUID, cMethodName, tmComPort, E );
+      Self.Warder.CallError( cLUID, cMethodName, E );
   end;
 end;
 {$ENDREGION}

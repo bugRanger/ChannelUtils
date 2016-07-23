@@ -17,7 +17,7 @@ uses
   Fnc_ConvVariant in '..\_source\Others\Fnc_ConvVariant.pas',
   Cls_ISocket in 'Source\ComInterfaces\Main\Cls_ISocket.pas',
   Cls_ISession in 'Source\ComInterfaces\Main\Cls_ISession.pas',
-  Cls_ThreadClass in '..\_source\Exchange\Cls_ThreadClass.pas';
+  Cls_ThreadCls in '..\_source\Exchange\Cls_ThreadCls.pas';
 
 exports
   DllGetClassObject,

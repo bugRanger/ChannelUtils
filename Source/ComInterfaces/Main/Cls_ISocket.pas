@@ -62,8 +62,8 @@ interface
         procedure OnWrite(const ABuffer: TBuffer; const ABytesTrans, AErrCode: Cardinal; const AResult: TExecuteResult);
         procedure OnRead(const ABuffer: TBuffer; const ABytesTrans, AErrCode: Cardinal; const AResult: TExecuteResult);
       private
-        procedure OnInfo(const AGUID: TGUID; const AText: string; const AType: TWarderMessage);
-        procedure OnError(const AGUID: TGUID; const AText: string; const AType: TWarderMessage; const AError: Exception);
+        procedure OnInfo(const ASender: TObject; const AGUID: TGUID; const AText: string; const AType: TWarderLevel);
+        procedure OnError(const ASender: TObject; const AGUID: TGUID; const AText: string; const AError: Exception; const AType: TWarderLevel);
       public
         function Exchange(AQuery: PSafeArray; out AReturn: PSafeArray): TResultExec; safecall;
         function Write(AQuery: PSafeArray; var ABytesTrans: Word; var AErrorCode: Word): TResultExec; safecall;
@@ -199,15 +199,14 @@ begin
     Self.FEvents.OnRead( ABuffer.ToVariant(), ABytesTrans, AErrCode, TResultExec( AResult ));
 end;
 
-procedure TISocket.OnInfo(const AGUID: TGUID; const AText: string; const AType: TWarderMessage);
-begin
-  if AType in [ tmSelf, tmSocket ] then
-    Self.FEvents.OnInfo( TConvVariant.FromRecord<TGUID>( AGUID ), AText );
-end;
-procedure TISocket.OnError(const AGUID: TGUID; const AText: string; const AType: TWarderMessage; const AError: Exception);
+procedure TISocket.OnInfo(const ASender: TObject; const AGUID: TGUID; const AText: string; const AType: TWarderLevel);
 begin
   if Assigned( Self.FEvents ) then
-    if AType in [ tmSelf, tmSocket ] then
+    Self.FEvents.OnInfo( TConvVariant.FromRecord<TGUID>( AGUID ), AText );
+end;
+procedure TISocket.OnError(const ASender: TObject; const AGUID: TGUID; const AText: string; const AError: Exception; const AType: TWarderLevel);
+begin
+  if Assigned( Self.FEvents ) then
   case Assigned( AError ) of
     True:
       Self.FEvents.OnError( TConvVariant.FromRecord<TGUID>( AGUID ), AText, AError.Message );
