@@ -12,7 +12,7 @@ unit ChannelUtils_TLB;
 // ************************************************************************ //
 
 // $Rev: 52393 $
-// File generated on 23.07.2016 10:21:44 from Type Library described below.
+// File generated on 01.08.2016 17:51:09 from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: D:\Projects\InDeveloping\ChannelUtils\Source\ComInterfaces\ChannelUtils (1)

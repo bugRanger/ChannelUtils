@@ -81,8 +81,8 @@ interface
         procedure OnWrite(const ABuffer: TBuffer; const ABytesTrans, AErrCode: Cardinal; const AResult: TExecuteResult);
         procedure OnRead(const ABuffer: TBuffer; const ABytesTrans, AErrCode: Cardinal; const AResult: TExecuteResult);
       private
-        procedure OnInfo(const ASender: TObject; const AGUID: TGUID; const AText: string; const AType: TWarderLevel);
-        procedure OnError(const ASender: TObject; const AGUID: TGUID; const AText: string; const AError: Exception; const AType: TWarderLevel);
+        procedure OnInfo(const ASender: TObject; const AGUID: TGUID; const AText: string; const AType: TWarderType; const ALevel: TWarderLevel);
+        procedure OnError(const ASender: TObject; const AGUID: TGUID; const AText: string; const AError: Exception; const AType: TWarderType; const ALevel: TWarderLevel);
       public
         function Exchange(AQuery: PSafeArray; out AReturn: PSafeArray): TResultExec; safecall;
         function Write(AQuery: PSafeArray; var ABytesTrans: Word; var AErrorCode: Word): TResultExec; safecall;
@@ -269,12 +269,12 @@ begin
     Self.FEvents.OnRead( ABuffer.ToVariant(), ABytesTrans, AErrCode, TResultExec( AResult ));
 end;
 
-procedure TIComPort.OnInfo(const ASender: TObject; const AGUID: TGUID; const AText: string; const AType: TWarderLevel);
+procedure TIComPort.OnInfo(const ASender: TObject; const AGUID: TGUID; const AText: string; const AType: TWarderType; const ALevel: TWarderLevel);
 begin
   if Assigned( Self.FEvents ) then
     Self.FEvents.OnInfo( TConvVariant.FromRecord<TGUID>( AGUID ), AText );
 end;
-procedure TIComPort.OnError(const ASender: TObject; const AGUID: TGUID; const AText: string; const AError: Exception; const AType: TWarderLevel);
+procedure TIComPort.OnError(const ASender: TObject; const AGUID: TGUID; const AText: string; const AError: Exception; const AType: TWarderType; const ALevel: TWarderLevel);
 begin
   if Assigned( Self.FEvents ) then
     case Assigned( AError ) of
@@ -336,7 +336,7 @@ procedure TIComPort.Open;
     cLUID : TGUID = '{81856462-820A-4347-BEA6-0858F8B8E9B1}';
 begin
   try
-    FComPort.Open( 0, True );
+    FComPort.Open( 0, False );
   except
     on E:Exception do
       Self.Warder.CallError( cLUID, cMethodName, E );

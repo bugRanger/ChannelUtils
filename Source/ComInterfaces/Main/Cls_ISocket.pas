@@ -25,7 +25,7 @@ interface
         cTagHost = '127.0.0.1';
         cTagPort = 0;
       private
-        FSocket   : TSocketCtrl<IUnknown>;
+        FSocket   : TSocketCtrl<TObject>;
         FEvents   : ICoChannelUtilsEvents;
         FSession  : TISession;
       private
@@ -62,8 +62,8 @@ interface
         procedure OnWrite(const ABuffer: TBuffer; const ABytesTrans, AErrCode: Cardinal; const AResult: TExecuteResult);
         procedure OnRead(const ABuffer: TBuffer; const ABytesTrans, AErrCode: Cardinal; const AResult: TExecuteResult);
       private
-        procedure OnInfo(const ASender: TObject; const AGUID: TGUID; const AText: string; const AType: TWarderLevel);
-        procedure OnError(const ASender: TObject; const AGUID: TGUID; const AText: string; const AError: Exception; const AType: TWarderLevel);
+        procedure OnInfo(const ASender: TObject; const AGUID: TGUID; const AText: string; const AType: TWarderType; const ALevel: TWarderLevel);
+        procedure OnError(const ASender: TObject; const AGUID: TGUID; const AText: string; const AError: Exception; const AType: TWarderType; const ALevel: TWarderLevel);
       public
         function Exchange(AQuery: PSafeArray; out AReturn: PSafeArray): TResultExec; safecall;
         function Write(AQuery: PSafeArray; var ABytesTrans: Word; var AErrorCode: Word): TResultExec; safecall;
@@ -99,7 +99,7 @@ begin
   //Присвоение.
   FEvents := AEvents;
   //Создание.
-  FSocket := TSocketCtrl<IUnknown>.Create( nil, cTagHost, cTagPort, AClose, FWarder );
+  FSocket := TSocketCtrl<TObject>.Create( nil, cTagHost, cTagPort, AClose, FWarder );
     FSocket.OnExchange  := Self.OnExchange;
     FSocket.OnWrite     := Self.OnWrite;
     FSocket.OnRead      := Self.OnRead;
@@ -199,12 +199,12 @@ begin
     Self.FEvents.OnRead( ABuffer.ToVariant(), ABytesTrans, AErrCode, TResultExec( AResult ));
 end;
 
-procedure TISocket.OnInfo(const ASender: TObject; const AGUID: TGUID; const AText: string; const AType: TWarderLevel);
+procedure TISocket.OnInfo(const ASender: TObject; const AGUID: TGUID; const AText: string; const AType: TWarderType; const ALevel: TWarderLevel);
 begin
   if Assigned( Self.FEvents ) then
     Self.FEvents.OnInfo( TConvVariant.FromRecord<TGUID>( AGUID ), AText );
 end;
-procedure TISocket.OnError(const ASender: TObject; const AGUID: TGUID; const AText: string; const AError: Exception; const AType: TWarderLevel);
+procedure TISocket.OnError(const ASender: TObject; const AGUID: TGUID; const AText: string; const AError: Exception; const AType: TWarderType; const ALevel: TWarderLevel);
 begin
   if Assigned( Self.FEvents ) then
   case Assigned( AError ) of
